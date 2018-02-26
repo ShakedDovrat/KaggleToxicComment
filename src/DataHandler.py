@@ -35,6 +35,12 @@ class DataHandler:
         #self.data['train']['grammar_data'] =self.data['train']['cleaned'].apply(self.obtain_grammar_data)
         self.data.to_csv(os.path.join(self.base_folder, 'train_analysis.csv'))
         print(self.data['train']['vectored'])
+        num_vectors = []
+        words_list, _, _ = self.read_word2vec_output()
+        for sen in self.data['train']['vectored']:
+            num_vectors.append(self.convert_sentence_to_vector(sen, words_list))
+        self.data['train']['input'] = num_vectors
+
 
     def obtain_grammar_data(self, raw_text):
         matches = self.tool.check(raw_text)
@@ -44,7 +50,8 @@ class DataHandler:
     def get_label_data(self):
         label_data = [self.data['toxic'], self.data['severe_toxic'], self.data['obscene'], self.data['threat'], self.data['insult'],
              self.data['identity_hate']]
-        return label_data
+
+        return np.asarray(label_data)
 
     @staticmethod
     def text_to_words(raw_text, remove_stopwords=False):
@@ -66,4 +73,27 @@ class DataHandler:
         data = data['comment_text'].apply(lambda x: x.lower())  # lower-case
         data.fillna(value='NONE', inplace=True)  # fill nulls
         return data
+
+
+    def read_word2vec_output(self, path=None):
+        path = path or os.path.join(self.base_folder, 'all_data_word2vec_size_50_iter20.txt')
+        f = open(path)
+        lines = f.readlines()
+        vocab_size = int(lines[0].split()[0])
+        words_list = []
+        vectors = []
+        for line in lines[1:]:
+            cur_vec = []
+            parts = line.split()
+            words_list.append(parts[0])
+            for number in parts[1:]:
+                cur_vec.append(float(number))
+            cur_np_vec = np.array(cur_vec)
+            vectors.append(cur_np_vec)
+        return words_list, vectors, vocab_size
+
+    @staticmethod
+    def convert_sentence_to_vector(words, words_list):
+        vec = map(lambda x: words_list.index(x), words)
+        return vec
 

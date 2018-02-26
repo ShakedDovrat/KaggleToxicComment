@@ -14,8 +14,9 @@ def main():
     classifier.build_net()
     classifier.train()
     results = classifier.evaluate()
+    predictions = classifier.predict_on_test()
 
-    analyzer = PerformanceEvaluator(data_handler, results)
+    analyzer = PerformanceEvaluator(data_handler, predictions)
     analyzer.analyze()
     analyzer.output_results('results.csv')
 

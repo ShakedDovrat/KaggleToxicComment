@@ -1,6 +1,5 @@
-import sklearn
-import csv
-import numpy as np
+import pandas as pd
+
 
 class PerformanceEvaluator:
     def __init__(self, data_handler, results):
@@ -15,17 +14,8 @@ class PerformanceEvaluator:
         pass
 
     def output_results(self, output_file):
-        L = len(self.data_handler.data['test']['cleaned'])
-
-        with open(output_file, 'w', newline='') as csv_file:
-            writer = csv.writer(csv_file)
-            writer.writerow('id','toxic','severe_toxic','obscene','threat','insult','identity_hate')
-            for line in range(L):
-                line_id = self.data_handler.data['test']['raw']['id'][line]
-                res = self.results[line, :]
-                # ugly code, I'm sure there is a better way
-                a, b, c, d, e, f = (np.array_str(res)[2:-1]).split('  ')
-                writer.writerow([line_id, a, b, c, d, e, f])
-
-
-
+        test_df = self.data_handler.data['test']['raw']
+        x = test_df['id']
+        x2 = pd.DataFrame(self.results, columns=['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate'])
+        x3 = pd.concat([x, x2], axis=1)
+        x3.to_csv(output_file, index=False)

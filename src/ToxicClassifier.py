@@ -51,6 +51,9 @@ class ToxicClassifier:
             epochs=self.C.num_epochs,
             validation_data=(self.data_handler['test']['input'], self.data_handler['test']['labels']))
 
+    def predict_on_test(self):
+        pass
+
     def evaluate(self):
         results = None
         L = len(self.data_handler.data['test']['cleaned'])

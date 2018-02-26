@@ -16,7 +16,7 @@ class Config:
 
 class ToxicClassifier:
     def __init__(self, data_handler, config):
-        self.data_handler = data_handler
+        self.data_handler = data_handler('..\data')
         self.C = config
 
     def build_net(self):
@@ -40,7 +40,7 @@ class ToxicClassifier:
 
     def train(self):
         x = self.data_handler['train']['input']
-        y = self.data_handler['train']['labels']
+        y = self.data_handler.get_label_data
         self.model.fit(
             x=x,
             y=y,

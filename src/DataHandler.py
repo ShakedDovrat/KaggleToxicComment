@@ -41,6 +41,11 @@ class DataHandler:
         num_of_spell_errors = [match.locqualityissuetype == 'misspelling' for match in matches]
         return np.array([len(matches), len(num_of_spell_errors)])
 
+    def get_label_data(self):
+        label_data = [self.data['toxic'], self.data['severe_toxic'], self.data['obscene'], self.data['threat'], self.data['insult'],
+             self.data['identity_hate']]
+        return label_data
+
     @staticmethod
     def text_to_words(raw_text, remove_stopwords=False):
         # 1. Remove non-letters, but including numbers

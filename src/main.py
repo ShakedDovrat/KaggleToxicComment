@@ -9,7 +9,7 @@ def main():
     data_handler.clean()
     data_handler.analyze()
 
-    config = Config(vocab_size=None)
+    config = Config()
     classifier = ToxicClassifier(data_handler, config)
     classifier.build_net()
     classifier.train()

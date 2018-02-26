@@ -4,8 +4,8 @@ from keras import optimizers
 
 
 class Config:
-    def __init__(self, vocab_size, embedding_dim=100, embedding_matrix=None, lstm_state_size=100, batch_size=2 ** 5,
-                 num_epochs=10):
+    def __init__(self, vocab_size=1000, embedding_dim=100, embedding_matrix=None, lstm_state_size=100,
+                 batch_size=2 ** 5, num_epochs=10):
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
         self.embedding_matrix = embedding_matrix

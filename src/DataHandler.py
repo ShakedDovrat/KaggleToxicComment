@@ -55,7 +55,6 @@ class DataHandler:
     def analyze(self):
         self.data['train']['vectored'] = self.data['train']['cleaned'].apply(DataHandler.text_to_words)
         #self.data['train']['grammar_data'] =self.data['train']['cleaned'].apply(self.obtain_grammar_data)
-        self.data.to_csv(os.path.join(self.base_folder, 'train_analysis.csv'))
         print(self.data['train']['vectored'])
         num_vectors = []
         words_list, _, _ = self.read_word2vec_output()
@@ -67,11 +66,12 @@ class DataHandler:
     def obtain_grammar_data(self, raw_text):
         matches = self.tool.check(raw_text)
         num_of_spell_errors = [match.locqualityissuetype == 'misspelling' for match in matches]
-        return np.array([len(matches), len(num_of_spell_errors)])
+        return np.array([len(maches), len(num_of_spell_errors)])
 
-    def get_label_data(self):
-        label_data = [self.data['toxic'], self.data['severe_toxic'], self.data['obscene'], self.data['threat'], self.data['insult'],
-             self.data['identity_hate']]
+    def get_label_data_train(self):
+        relevant_data = self.data['train']['raw']
+        label_data = [relevant_data['toxic'], relevant_data['severe_toxic'], relevant_data['obscene'], relevant_data['threat'], relevant_data['insult'],
+                      relevant_data['identity_hate']]
 
         return np.asarray(label_data)
 

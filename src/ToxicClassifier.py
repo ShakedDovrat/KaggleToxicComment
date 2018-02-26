@@ -17,7 +17,7 @@ class ToxicClassifier:
     def __init__(self, data_handler, config):
         self.data_handler = data_handler
         self.C = config
-        [_, self.vectors, self.vocab_size] = self.data_handler.read_word2vec_output()
+        [_, self.embedding_matrix, self.vocab_size] = self.data_handler.read_word2vec_output()
 
     def build_net(self):
         self.model = self._build_simple_model()

@@ -33,15 +33,15 @@ class DataHandler:
         num_vectors = []
         words_list, _, _ = self.read_word2vec_output()
         for sen in self.data['train']['vectored']:
-            num_vectors.append(self.convert_sentence_to_vector(sen, words_list))
+            num_vectors.append(self.convert_sentence_to_idx_vector(sen, words_list))
         self.data['train']['input'] = num_vectors
 
     @staticmethod
     def text_to_words(raw_text, remove_stopwords=False):
         # 1. Remove non-letters, but including numbers
-        letters_only = re.sub("[^0-9a-zA-Z]", " ", raw_text)
+        # letters_only = re.sub("[^0-9a-zA-Z]", " ", raw_text)
         # 2. Convert to lower case, split into individual words
-        words = letters_only.lower().split()
+        words = raw_text.split()
         # if remove_stopwords:
         #     stops = set(stopwords.words("english")) # In Python, searching a set is much faster than searching
         #     meaningful_words = [w for w in words if not w in stops] # Remove stop words
@@ -57,7 +57,7 @@ class DataHandler:
         return data
 
     def read_word2vec_output(self, path=None):
-        path = path or os.path.join(self.base_folder, 'all_data_word2vec_size_50_iter20.txt')
+        path = path or os.path.join(self.base_folder, 'all_data_word2vec_size_50_iter10_v3.txt')
         f = open(path)
         lines = f.readlines()
         vocab_size = int(lines[0].split()[0])
@@ -74,6 +74,6 @@ class DataHandler:
         return words_list, vectors, vocab_size
 
     @staticmethod
-    def convert_sentence_to_vector(words, words_list):
+    def convert_sentence_to_idx_vector(words, words_list):
         vec = map(lambda x: words_list.index(x), words)
         return vec

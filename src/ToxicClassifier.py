@@ -45,7 +45,7 @@ class ToxicClassifier:
             y=y,
             batch_size=self.C.batch_size,
             epochs=self.C.num_epochs,
-            validation_data=(self.data_handler['test']['input'], self.data_handler['test']['labels']))
+            validation_data=(self.data_handler['train']['input'], self.data_handler['train']['labels']))
 
     def evaluate(self):
         x = self.data_handler['test']['input']

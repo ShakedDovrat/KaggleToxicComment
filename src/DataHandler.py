@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 import re
+import language_check
 
 
 class DataHandler:
@@ -9,6 +10,7 @@ class DataHandler:
         self.base_folder = base_folder
         data_map = dict(raw=[], cleaned=[], vectored=[])
         self.data = dict(train=data_map.copy(), val=data_map.copy(), test=data_map.copy())
+        self.tool = language_check.LanguageTool('en-US')
 
     def load(self):
         train_file = os.path.join(self.base_folder, 'train.csv')
@@ -20,7 +22,12 @@ class DataHandler:
 
     def analyze(self):
         self.data['train']['vectored'] = self.data['train']['cleaned'].apply(DataHandler.text_to_words)
+        self.data['train']['grammar_errors'] =self.data['train']['cleaned'].apply(DataHandler.count_grammar_errors)
         print(self.data['train']['vectored'])
+
+    def count_grammar_errors(self, raw_text):
+        matches = self.tool.check(raw_text)
+        return len(matches)
 
     @staticmethod
     def text_to_words(raw_text, remove_stopwords=False):
@@ -33,3 +40,4 @@ class DataHandler:
         #     meaningful_words = [w for w in words if not w in stops] # Remove stop words
         #     words = meaningful_words
         return words
+

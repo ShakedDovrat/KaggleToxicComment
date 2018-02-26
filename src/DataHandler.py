@@ -12,11 +12,17 @@ class DataHandler:
 
     def load(self):
         train_file = os.path.join(self.base_folder, 'train.csv')
+        test_file = os.path.join(self.base_folder, 'test.csv')
         self.data['train']['raw'] = pd.read_csv(train_file)
+        self.data['test']['raw'] = pd.read_csv(test_file)
 
-    def clean(self):
-        self.data['train']['cleaned'] = self.data['train']['raw']['comment_text'].copy()
-        self.data['train']['cleaned'].fillna(value='none', inplace=True)
+    def clean(self, output_file_name):
+        all_comments = pd.concat([self.data['train']['raw'], self.data['test']['raw']])
+        all_comments = all_comments.replace(r'\n', ' ', regex=True)
+        all_comments = all_comments['comment_text'].apply(lambda x: x.lower())  # lower-case
+        all_comments.fillna(value='NONE', inplace=True)  # fill nulls
+        output_file_path = os.path.join(self.base_folder, output_file_name)
+        np.savetxt(output_file_path, all_comments.values, fmt='%s')
 
     def analyze(self):
         self.data['train']['vectored'] = self.data['train']['cleaned'].apply(DataHandler.text_to_words)

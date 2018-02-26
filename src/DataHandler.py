@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import re
 import language_check
-import gensim
+
 
 
 class DataHandler:
@@ -32,12 +32,14 @@ class DataHandler:
 
     def analyze(self):
         self.data['train']['vectored'] = self.data['train']['cleaned'].apply(DataHandler.text_to_words)
-        self.data['train']['grammar_errors'] =self.data['train']['cleaned'].apply(DataHandler.count_grammar_errors)
+        #self.data['train']['grammar_data'] =self.data['train']['cleaned'].apply(self.obtain_grammar_data)
+        self.data.to_csv(os.path.join(self.base_folder, 'train_analysis.csv'))
         print(self.data['train']['vectored'])
 
-    def count_grammar_errors(self, raw_text):
+    def obtain_grammar_data(self, raw_text):
         matches = self.tool.check(raw_text)
-        return len(matches)
+        num_of_spell_errors = [match.locqualityissuetype == 'misspelling' for match in matches]
+        return np.array([len(matches), len(num_of_spell_errors)])
 
     @staticmethod
     def text_to_words(raw_text, remove_stopwords=False):

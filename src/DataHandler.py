@@ -12,12 +12,12 @@ class DataHandler:
         self.data = dict(train=data_map.copy(), val=data_map.copy(), test=data_map.copy())
 
     def load(self):
-        for data_type in {'train', 'test'}:
+        for data_type in ['train', 'test']:
             input_file = os.path.join(self.base_folder, data_type+'.csv')
             self.data[data_type]['raw'] = pd.read_csv(input_file)
 
     def clean(self, output_file_name=None):
-        for data_type in {'train', 'test'}:
+        for data_type in ['train', 'test']:
             self.data[data_type]['cleaned'] = DataHandler._clean(self.data[data_type]['raw'])
         if output_file_name:
             all_comments = pd.concat([self.data['train']['cleaned'], self.data['test']['cleaned']])

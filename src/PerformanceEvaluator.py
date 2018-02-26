@@ -1,12 +1,9 @@
-class ToxicClassifier:
+class PerformanceEvaluator:
     def __init__(self, data_handler):
         self.data_handler = data_handler
 
-    def build_net(self):
+    def analyze(self):
         pass
 
-    def train(self):
-        pass
-
-    def evaluate(self):
+    def output_results(self):
         pass

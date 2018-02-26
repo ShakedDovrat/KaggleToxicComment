@@ -1,10 +1,11 @@
 from keras.layers import Input, Dense, Activation, LSTM, Embedding
 from keras.models import Model
 from keras import optimizers
+import numpy as np
 
 
 class Config:
-    def __init__(self, embedding_dim=100, embedding_matrix=None, lstm_state_size=100,
+    def __init__(self, embedding_dim=50, embedding_matrix=None, lstm_state_size=100,
                  batch_size=2 ** 5, num_epochs=10):
         self.embedding_dim = embedding_dim
         self.embedding_matrix = embedding_matrix
@@ -15,7 +16,7 @@ class Config:
 
 class ToxicClassifier:
     def __init__(self, data_handler, config):
-        self.data_handler = data_handler('..\data')
+        self.data_handler = data_handler
         self.C = config
         [_, self.embedding_matrix, self.vocab_size] = self.data_handler.read_word2vec_output()
 
@@ -25,10 +26,11 @@ class ToxicClassifier:
         self.model.compile(loss="binary_crossentropy", optimizer=optimizer)
 
     def _build_simple_model(self):
-        sequence_input = Input()
-        embedding_layer = Embedding(self.C.vocab_size + 1,
+        sequence_input = Input(shape=(None, 1))
+        embedding_layer = Embedding(self.vocab_size,
                                     self.C.embedding_dim,
-                                    weights=None if self.C.embedding_matrix is None else [self.C.embedding_matrix],
+                                    weights=None if self.embedding_matrix is None else np.array(
+                                        [self.embedding_matrix]),
                                     trainable=True)
         embedded_sequences = embedding_layer(sequence_input)
         x = LSTM(self.C.lstm_state_size)(embedded_sequences)

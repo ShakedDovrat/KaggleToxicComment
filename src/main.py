@@ -13,7 +13,6 @@ def main():
     classifier = ToxicClassifier(data_handler, config)
     classifier.build_net()
     classifier.train()
-    results = classifier.evaluate()
     predictions = classifier.predict_on_test()
 
     analyzer = PerformanceEvaluator(data_handler, predictions)

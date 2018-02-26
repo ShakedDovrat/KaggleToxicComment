@@ -28,18 +28,17 @@ class ToxicClassifier:
         self.model.compile(loss="binary_crossentropy", optimizer=optimizer)
 
     def _build_simple_model(self):
-        pass
-        # sequence_input = Input()
-        # embedding_layer = Embedding(self.C.vocab_size,
-        #                             self.C.embedding_dim,
-        #                             weights=None if self.C.embedding_matrix is None else [self.C.embedding_matrix],
-        #                             trainable=True)
-        # embedded_sequences = embedding_layer(sequence_input)
-        # x = LSTM(self.C.lstm_state_size)(embedded_sequences)
-        # x = Activation('relu')(x)
-        # x = Dense(6, activation='sigmoid')(x)
-        # model = Model(inputs=input, outputs=x)
-        # return model
+        sequence_input = Input()
+        embedding_layer = Embedding(self.C.vocab_size,
+                                    self.C.embedding_dim,
+                                    weights=None if self.C.embedding_matrix is None else [self.C.embedding_matrix],
+                                    trainable=True)
+        embedded_sequences = embedding_layer(sequence_input)
+        x = LSTM(self.C.lstm_state_size)(embedded_sequences)
+        x = Activation('relu')(x)
+        x = Dense(6, activation='sigmoid')(x)
+        model = Model(inputs=input, outputs=x)
+        return model
 
     def train(self):
         x = self.data_handler['train']['input']
@@ -53,14 +52,3 @@ class ToxicClassifier:
 
     def predict_on_test(self):
         pass
-
-    def evaluate(self):
-        results = None
-        L = len(self.data_handler.data['test']['cleaned'])
-        results = np.random.rand(L, 6)
-        return results
-
-        # x = self.data_handler['test']['input']
-        # y = self.data_handler['test']['labels']
-        # return self.model.evaluate(x=x, y=y, batch_size=self.C.batch_size)
-

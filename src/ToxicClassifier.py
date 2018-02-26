@@ -1,6 +1,8 @@
 from keras.layers import Input, Dense, Activation, LSTM, Embedding
 from keras.models import Model
+import random as random
 from keras import optimizers
+import numpy as np
 
 
 class Config:
@@ -11,6 +13,7 @@ class Config:
         self.lstm_state_size = lstm_state_size
         self.batch_size = batch_size
         self.num_epochs = num_epochs
+        self.lr = 0.01
 
 
 class ToxicClassifier:
@@ -47,7 +50,5 @@ class ToxicClassifier:
             epochs=self.C.num_epochs,
             validation_data=(self.data_handler['test']['input'], self.data_handler['test']['labels']))
 
-    def evaluate(self):
-        x = self.data_handler['test']['input']
-        y = self.data_handler['test']['labels']
-        return self.model.evaluate(x=x, y=y, batch_size=self.C.batch_size)
+    def predict_on_test(self):
+        pass

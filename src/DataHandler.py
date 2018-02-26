@@ -15,14 +15,13 @@ class DataHandler:
         self.tool = language_check.LanguageTool('en-US')
 
     def load(self):
-        train_file = os.path.join(self.base_folder, 'train.csv')
-        test_file = os.path.join(self.base_folder, 'test.csv')
-        self.data['train']['raw'] = pd.read_csv(train_file)
-        self.data['test']['raw'] = pd.read_csv(test_file)
+        for data_type in ['train', 'test']:
+            input_file = os.path.join(self.base_folder, data_type+'.csv')
+            self.data[data_type]['raw'] = pd.read_csv(input_file)
 
     def clean(self, output_file_name=None):
-        self.data['train']['cleaned'] = DataHandler._clean(self.data['train']['raw'])
-        self.data['test']['cleaned'] = DataHandler._clean(self.data['test']['raw'])
+        for data_type in ['train', 'test']:
+            self.data[data_type]['cleaned'] = DataHandler._clean(self.data[data_type]['raw'])
 
         if output_file_name:
             all_comments = pd.concat([self.data['train']['cleaned'], self.data['test']['cleaned']])

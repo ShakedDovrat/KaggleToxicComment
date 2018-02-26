@@ -1,6 +1,6 @@
 from keras.layers import Input, Dense, Activation, LSTM, Embedding
 from keras.models import Model
-
+import random as random
 
 class ToxicClassifier:
     def __init__(self, data_handler):
@@ -30,4 +30,7 @@ class ToxicClassifier:
         pass
 
     def evaluate(self):
-        pass
+        results = None
+        for ind in range(len(self.data_handler.data['test']['cleaned'])):
+            results[ind] = [random.uniform(0, 1) for _ in range(6)]
+        return results

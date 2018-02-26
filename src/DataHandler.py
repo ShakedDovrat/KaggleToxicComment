@@ -30,7 +30,11 @@ class DataHandler:
 
     def analyze(self):
         self.data['train']['vectored'] = self.data['train']['cleaned'].apply(DataHandler.text_to_words)
-        print(self.data['train']['vectored'])
+        num_vectors = []
+        words_list, _, _ = self.read_word2vec_output()
+        for sen in self.data['train']['vectored']:
+            num_vectors.append(self.convert_sentence_to_vector(sen, words_list))
+        self.data['train']['input'] = num_vectors
 
     @staticmethod
     def text_to_words(raw_text, remove_stopwords=False):
@@ -51,3 +55,26 @@ class DataHandler:
         data = data['comment_text'].apply(lambda x: x.lower())  # lower-case
         data.fillna(value='NONE', inplace=True)  # fill nulls
         return data
+
+    @staticmethod
+    def read_word2vec_output(path='data/all_data_word2vec_size_50_iter20.txt'):
+        f = open(path)
+        lines = f.readlines()
+        vocab_size = int(lines[0].split()[0])
+        words_list = []
+        vectors = []
+        for line in lines[1:]:
+            cur_vec = []
+            parts = line.split()
+            words_list.append(parts[0])
+            for number in parts[1:]:
+                cur_vec.append(int(number))
+            cur_np_vec = np.array(cur_vec)
+            vectors.append(cur_np_vec)
+        return words_list, vectors, vocab_size
+
+    @staticmethod
+    def convert_sentence_to_vector(sentence, words_list):
+        words = sentence.split()
+        vec = map(lambda x: words_list.index(x), words)
+        return vec

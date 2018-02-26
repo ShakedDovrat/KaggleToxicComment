@@ -1,6 +1,5 @@
 from DataHandler import *
 from ToxicClassifier import *
-from model import ToxicClassifier
 from PerformanceEvaluator import *
 
 

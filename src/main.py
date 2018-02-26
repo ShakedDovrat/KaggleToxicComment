@@ -9,7 +9,8 @@ def main():
     data_handler.clean()
     data_handler.analyze()
 
-    classifier = ToxicClassifier(data_handler)
+    config = Config()
+    classifier = ToxicClassifier(data_handler, config)
     classifier.build_net()
     classifier.train()
     classifier.evaluate()

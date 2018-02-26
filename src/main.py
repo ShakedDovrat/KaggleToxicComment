@@ -1,5 +1,7 @@
 from DataHandler import *
 from ToxicClassifier import *
+from model import ToxicClassifier
+
 
 def main():
     data_handler = DataHandler('..\data')

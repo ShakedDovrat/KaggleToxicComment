@@ -1,10 +1,7 @@
 import keras
 
-from keras.layers import Input, Dense, Conv1D, BatchNormalization, Activation, Flatten, concatenate, MaxPool1D, LSTM, \
-    Reshape, Bidirectional, TimeDistributed, Dropout, Concatenate, Embedding
+from keras.layers import Input, Dense, Activation, LSTM, Embedding
 from keras.models import Model
-
-keras.layers.Embedding
 
 
 class ToxicClassifier:

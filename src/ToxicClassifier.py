@@ -6,9 +6,8 @@ import numpy as np
 
 
 class Config:
-    def __init__(self, vocab_size=1000, embedding_dim=100, embedding_matrix=None, lstm_state_size=100,
+    def __init__(self, embedding_dim=100, embedding_matrix=None, lstm_state_size=100,
                  batch_size=2 ** 5, num_epochs=10):
-        self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
         self.embedding_matrix = embedding_matrix
         self.lstm_state_size = lstm_state_size
@@ -19,16 +18,14 @@ class Config:
 
 class ToxicClassifier:
     def __init__(self, data_handler, config):
-        pass
-        self.data_handler = data_handler
-        # self.C = config
+        self.data_handler = data_handler('..\data')
+        self.C = config
+        [_, self.vectors, self.vocab_size] = self.data_handler.read_word2vec_output()
 
     def build_net(self):
-        pass
-        # self.model = self._build_simple_model()
-
-        # optimizer = optimizers.Adam(lr=self.C.lr)
-        # self.model.compile(loss="binary_crossentropy", optimizer=optimizer)
+        self.model = self._build_simple_model()
+        optimizer = optimizers.Adam(lr=self.C.lr)
+        self.model.compile(loss="binary_crossentropy", optimizer=optimizer)
 
     def _build_simple_model(self):
         pass
@@ -45,15 +42,14 @@ class ToxicClassifier:
         # return model
 
     def train(self):
-        pass
-        # x = self.data_handler['train']['input']
-        # y = self.data_handler['train']['labels']
-        # self.model.fit(
-        #     x=x,
-        #     y=y,
-        #     batch_size=self.C.batch_size,
-        #     epochs=self.C.num_epochs,
-        #     validation_data=(self.data_handler['test']['input'], self.data_handler['test']['labels']))
+        x = self.data_handler['train']['input']
+        y = self.data_handler.get_label_data
+        self.model.fit(
+            x=x,
+            y=y,
+            batch_size=self.C.batch_size,
+            epochs=self.C.num_epochs,
+            validation_data=(self.data_handler['test']['input'], self.data_handler['test']['labels']))
 
     def evaluate(self):
         results = None

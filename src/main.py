@@ -4,7 +4,7 @@ from PerformanceEvaluator import *
 
 
 def main():
-    data_handler = DataHandler('..\data')
+    data_handler = DataHandler(os.path.join('..', 'data'))
     data_handler.load()
     data_handler.clean()
     data_handler.analyze()
@@ -18,7 +18,6 @@ def main():
     analyzer = PerformanceEvaluator(data_handler, results)
     analyzer.analyze()
     analyzer.output_results('results.csv')
-
 
 if __name__ == '__main__':
     main()

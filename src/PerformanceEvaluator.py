@@ -1,5 +1,5 @@
-import sklearn
 import pandas as pd
+# import sklearn
 
 
 class PerformanceEvaluator:
@@ -8,10 +8,11 @@ class PerformanceEvaluator:
         self.results = results
 
     def analyze(self):
-        y_true = self.data_handler.data['test']['label']
-        y_score = self.results
-        score_total = sklearn.metrics.roc_auc_score(y_true, y_score)
-        print(score_total)
+        # y_true = self.data_handler.data['test']['label']
+        # y_score = self.results
+        # score_total = sklearn.metrics.roc_auc_score(y_true, y_score)
+        # print(score_total)
+        pass
 
     def output_results(self, output_file):
         test_df = self.data_handler.data['test']['raw']

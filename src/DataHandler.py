@@ -56,8 +56,8 @@ class DataHandler:
         data.fillna(value='NONE', inplace=True)  # fill nulls
         return data
 
-    @staticmethod
-    def read_word2vec_output(path='data/all_data_word2vec_size_50_iter20.txt'):
+    def read_word2vec_output(self, path=None):
+        path = path or os.path.join(self.base_folder, 'all_data_word2vec_size_50_iter20.txt')
         f = open(path)
         lines = f.readlines()
         vocab_size = int(lines[0].split()[0])
@@ -68,13 +68,12 @@ class DataHandler:
             parts = line.split()
             words_list.append(parts[0])
             for number in parts[1:]:
-                cur_vec.append(int(number))
+                cur_vec.append(float(number))
             cur_np_vec = np.array(cur_vec)
             vectors.append(cur_np_vec)
         return words_list, vectors, vocab_size
 
     @staticmethod
-    def convert_sentence_to_vector(sentence, words_list):
-        words = sentence.split()
+    def convert_sentence_to_vector(words, words_list):
         vec = map(lambda x: words_list.index(x), words)
         return vec

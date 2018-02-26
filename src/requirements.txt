@@ -1,0 +1,8 @@
+keras
+tensorflow
+numpy
+scipy
+pandas
+gensim
+nltk
+sklearn

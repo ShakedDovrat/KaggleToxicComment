@@ -1,5 +1,3 @@
-import keras
-
 from keras.layers import Input, Dense, Activation, LSTM, Embedding
 from keras.models import Model
 

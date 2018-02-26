@@ -29,7 +29,6 @@ class DataHandler:
 
     def analyze(self):
         self.data['train']['vectored'] = self.data['train']['cleaned'].apply(DataHandler.text_to_words)
-        print(self.data['train']['vectored'])
 
     @staticmethod
     def text_to_words(raw_text, remove_stopwords=False):

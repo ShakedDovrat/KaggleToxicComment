@@ -15,7 +15,7 @@ class Config:
 
 class ToxicClassifier:
     def __init__(self, data_handler, config):
-        self.data_handler = data_handler
+        self.data_handler = data_handler('..\data')
         self.C = config
         [_, self.embedding_matrix, self.vocab_size] = self.data_handler.read_word2vec_output()
 
@@ -39,7 +39,7 @@ class ToxicClassifier:
 
     def train(self):
         x = self.data_handler['train']['input']
-        y = self.data_handler['train']['labels']
+        y = self.data_handler.get_label_data
         self.model.fit(
             x=x,
             y=y,

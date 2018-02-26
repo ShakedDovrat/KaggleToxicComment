@@ -2,9 +2,11 @@ import os
 import pandas as pd
 import numpy as np
 import re
-import language_check
+# import language_check
 import gensim
-import word2vecReader
+
+
+# import word2vecReader
 
 
 class DataHandler:
@@ -12,7 +14,7 @@ class DataHandler:
         self.base_folder = base_folder
         data_map = dict(raw=[], cleaned=[], vectored=[])
         self.data = dict(train=data_map.copy(), val=data_map.copy(), test=data_map.copy())
-        self.tool = language_check.LanguageTool('en-US')
+        # self.tool = language_check.LanguageTool('en-US')
 
     def load(self):
         train_file = os.path.join(self.base_folder, 'train.csv')
@@ -50,28 +52,28 @@ class DataHandler:
         model.build_vocab(comments)
         model.intersect_word2vec_format(pretrained_model_path, binary=True, unicode_errors='ignore')  # C binary format
         model.train(comments)
-        x=1
+        x = 1
 
     def analyze(self):
         self.data['train']['vectored'] = self.data['train']['cleaned'].apply(DataHandler.text_to_words)
-        #self.data['train']['grammar_data'] =self.data['train']['cleaned'].apply(self.obtain_grammar_data)
-        self.data.to_csv(os.path.join(self.base_folder, 'train_analysis.csv'))
-        print(self.data['train']['vectored'])
+        # self.data['train']['grammar_data'] =self.data['train']['cleaned'].apply(self.obtain_grammar_data)
+        # self.data.to_csv(os.path.join(self.base_folder, 'train_analysis.csv'))
+        # print(self.data['train']['vectored'])
         num_vectors = []
         words_list, _, _ = self.read_word2vec_output()
         for sen in self.data['train']['vectored']:
             num_vectors.append(self.convert_sentence_to_idx_vector(sen, words_list))
         self.data['train']['input'] = num_vectors
 
-
-    def obtain_grammar_data(self, raw_text):
-        matches = self.tool.check(raw_text)
-        num_of_spell_errors = [match.locqualityissuetype == 'misspelling' for match in matches]
-        return np.array([len(matches), len(num_of_spell_errors)])
+    # def obtain_grammar_data(self, raw_text):
+    #     matches = self.tool.check(raw_text)
+    #     num_of_spell_errors = [match.locqualityissuetype == 'misspelling' for match in matches]
+    #     return np.array([len(matches), len(num_of_spell_errors)])
 
     def get_label_data(self):
-        label_data = [self.data['toxic'], self.data['severe_toxic'], self.data['obscene'], self.data['threat'], self.data['insult'],
-             self.data['identity_hate']]
+        label_data = [self.data['toxic'], self.data['severe_toxic'], self.data['obscene'], self.data['threat'],
+                      self.data['insult'],
+                      self.data['identity_hate']]
 
         return np.asarray(label_data)
 
@@ -87,7 +89,6 @@ class DataHandler:
         #     words = meaningful_words
         return words
 
-
     @staticmethod
     def _clean(data):
         data = data.copy()
@@ -99,7 +100,6 @@ class DataHandler:
         data.fillna(value='_NONE_', inplace=True)  # fill nulls
         return data
 
-
     def read_word2vec_output(self, path=None):
         path = path or os.path.join(self.base_folder, 'all_data_word2vec_size_50_iter10_v3.txt')
         f = open(path)
@@ -107,7 +107,9 @@ class DataHandler:
         vocab_size = int(lines[0].split()[0])
         words_list = []
         vectors = []
-        for line in lines[1:]:
+        for i, line in enumerate(lines[1:]):
+            if i % 10000 == 0:
+                print i
             cur_vec = []
             parts = line.split()
             words_list.append(parts[0])
@@ -119,6 +121,12 @@ class DataHandler:
 
     @staticmethod
     def convert_sentence_to_idx_vector(words, words_list):
-        vec = map(lambda x: words_list.index(x), words)
-        return vec
-
+        idx = []
+        for word in words:
+            try:
+                cur_i = words_list.index(word)
+            except:
+                cur_i = len(words_list)
+                # print("error- ", word)
+            idx.append(cur_i)
+        return idx

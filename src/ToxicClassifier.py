@@ -26,7 +26,7 @@ class ToxicClassifier:
 
     def _build_simple_model(self):
         sequence_input = Input()
-        embedding_layer = Embedding(self.C.vocab_size,
+        embedding_layer = Embedding(self.C.vocab_size + 1,
                                     self.C.embedding_dim,
                                     weights=None if self.C.embedding_matrix is None else [self.C.embedding_matrix],
                                     trainable=True)

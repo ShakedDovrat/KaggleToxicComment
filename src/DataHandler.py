@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 import re
+import gensim
 
 
 class DataHandler:
@@ -16,13 +17,16 @@ class DataHandler:
         self.data['train']['raw'] = pd.read_csv(train_file)
         self.data['test']['raw'] = pd.read_csv(test_file)
 
-    def clean(self, output_file_name):
-        all_comments = pd.concat([self.data['train']['raw'], self.data['test']['raw']])
-        all_comments = all_comments.replace(r'\n', ' ', regex=True)
-        all_comments = all_comments['comment_text'].apply(lambda x: x.lower())  # lower-case
-        all_comments.fillna(value='NONE', inplace=True)  # fill nulls
-        output_file_path = os.path.join(self.base_folder, output_file_name)
-        np.savetxt(output_file_path, all_comments.values, fmt='%s')
+    def clean(self, output_file_name=None):
+        self.data['train']['cleaned'] = DataHandler._clean(self.data['train']['raw'])
+        self.data['test']['cleaned'] = DataHandler._clean(self.data['test']['raw'])
+        if output_file_name:
+            all_comments = pd.concat([self.data['train']['cleaned'], self.data['test']['cleaned']])
+            output_file_path = os.path.join(self.base_folder, output_file_name)
+            np.savetxt(output_file_path, all_comments.values, fmt='%s')
+
+    # def train_word2vec(self, pretrained_model_path='/home/bar/extDisk/kaggle/word2vec_twitter_model.bin'):
+    #     gensim.models.Word2Vec
 
     def analyze(self):
         self.data['train']['vectored'] = self.data['train']['cleaned'].apply(DataHandler.text_to_words)
@@ -39,3 +43,11 @@ class DataHandler:
         #     meaningful_words = [w for w in words if not w in stops] # Remove stop words
         #     words = meaningful_words
         return words
+
+    @staticmethod
+    def _clean(data):
+        data = data.copy()
+        data = data.replace(r'\n', ' ', regex=True)
+        data = data['comment_text'].apply(lambda x: x.lower())  # lower-case
+        data.fillna(value='NONE', inplace=True)  # fill nulls
+        return data

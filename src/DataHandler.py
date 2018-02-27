@@ -64,7 +64,7 @@ class DataHandler:
         num_vectors = []
         words_list, _, _ = self.read_word2vec_output()
         word2idx_dict = {word: i for i, word in enumerate(words_list)}
-        for i, sen in enumerate(self.data['train']['vectored'][:100]):
+        for i, sen in enumerate(self.data['train']['vectored']):
             if i % 1000 == 0:
                 print "a", i
             num_vectors.append(self.convert_sentence_to_idx_vector(sen, word2idx_dict))
@@ -80,8 +80,10 @@ class DataHandler:
         label_data = [relevant_data['toxic'], relevant_data['severe_toxic'], relevant_data['obscene'],
                       relevant_data['threat'], relevant_data['insult'],
                       relevant_data['identity_hate']]
+        label_by_row = [np.array([label_data[flag][i] for flag in range(len(label_data))]) for i in
+                        range(len(label_data[0]))]
 
-        return np.asarray(label_data)
+        return np.asarray(label_by_row)
 
     @staticmethod
     def text_to_words(raw_text, remove_stopwords=False):

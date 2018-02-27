@@ -2,9 +2,11 @@ import os
 import pandas as pd
 import numpy as np
 import re
-import language_check
+# import language_check
 import gensim
-import word2vecReader
+
+
+# import word2vecReader
 
 
 class DataHandler:
@@ -12,7 +14,7 @@ class DataHandler:
         self.base_folder = base_folder
         data_map = dict(raw=[], cleaned=[], vectored=[])
         self.data = dict(train=data_map.copy(), val=data_map.copy(), test=data_map.copy())
-        self.tool = language_check.LanguageTool('en-US')
+        # self.tool = language_check.LanguageTool('en-US')
 
     def load(self):
         for data_type in ['train', 'test']:
@@ -49,43 +51,51 @@ class DataHandler:
         model.build_vocab(comments)
         model.intersect_word2vec_format(pretrained_model_path, binary=True, unicode_errors='ignore')  # C binary format
         model.train(comments)
-        x=1
+        x = 1
 
     def analyze(self):
-        self.data['train']['vectored'] = self.data['train']['cleaned'].apply(DataHandler.text_to_words)
-        #self.data['train']['grammar_data'] =self.data['train']['cleaned'].apply(self.obtain_grammar_data)
-        print(self.data['train']['vectored'])
-        num_vectors = []
-        words_list, _, _ = self.read_word2vec_output()
-        for sen in self.data['train']['vectored']:
-            num_vectors.append(self.convert_sentence_to_vector(sen, words_list))
-        self.data['train']['input'] = num_vectors
+        for dataset in ['train', 'test']:
+            self.data[dataset]['vectored'] = self.data[dataset]['cleaned'].apply(DataHandler.text_to_words)
+            # self.data['train']['grammar_data'] =self.data['train']['cleaned'].apply(self.obtain_grammar_data)
+            # self.data.to_csv(os.path.join(self.base_folder, 'train_analysis.csv'))
+            # print(self.data['train']['vectored'])
+            # self.data['train']['grammar_data'] =self.data['train']['cleaned'].apply(self.obtain_grammar_data)
+            # print(self.data['train']['vectored'])
+            num_vectors = []
+            words_list, _, _ = self.read_word2vec_output()
+            word2idx_dict = {word: i for i, word in enumerate(words_list)}
+            for i, sen in enumerate(self.data[dataset]['vectored']):
+                if i % 1000 == 0:
+                    print "a", i
+                num_vectors.append(self.convert_sentence_to_idx_vector(sen, word2idx_dict))
+            self.data[dataset]['input'] = num_vectors
 
-
-    def obtain_grammar_data(self, raw_text):
-        matches = self.tool.check(raw_text)
-        num_of_spell_errors = [match.locqualityissuetype == 'misspelling' for match in matches]
-        return np.array([len(maches), len(num_of_spell_errors)])
+    # def obtain_grammar_data(self, raw_text):
+    #     matches = self.tool.check(raw_text)
+    #     num_of_spell_errors = [match.locqualityissuetype == 'misspelling' for match in matches]
+    #     return np.array([len(maches), len(num_of_spell_errors)])
 
     def get_label_data_train(self):
         relevant_data = self.data['train']['raw']
-        label_data = [relevant_data['toxic'], relevant_data['severe_toxic'], relevant_data['obscene'], relevant_data['threat'], relevant_data['insult'],
+        label_data = [relevant_data['toxic'], relevant_data['severe_toxic'], relevant_data['obscene'],
+                      relevant_data['threat'], relevant_data['insult'],
                       relevant_data['identity_hate']]
+        label_by_row = [np.array([label_data[flag][i] for flag in range(len(label_data))]) for i in
+                        range(len(label_data[0]))]
 
-        return np.asarray(label_data)
+        return np.asarray(label_by_row)
 
     @staticmethod
     def text_to_words(raw_text, remove_stopwords=False):
         # 1. Remove non-letters, but including numbers
-        letters_only = re.sub("[^0-9a-zA-Z]", " ", raw_text)
+        # letters_only = re.sub("[^0-9a-zA-Z]", " ", raw_text)
         # 2. Convert to lower case, split into individual words
-        words = letters_only.lower().split()
+        words = raw_text.split()
         # if remove_stopwords:
         #     stops = set(stopwords.words("english")) # In Python, searching a set is much faster than searching
         #     meaningful_words = [w for w in words if not w in stops] # Remove stop words
         #     words = meaningful_words
         return words
-
 
     @staticmethod
     def _clean(data):
@@ -98,15 +108,16 @@ class DataHandler:
         data.fillna(value='_NONE_', inplace=True)  # fill nulls
         return data
 
-
     def read_word2vec_output(self, path=None):
-        path = path or os.path.join(self.base_folder, 'all_data_word2vec_size_50_iter20.txt')
+        path = path or os.path.join(self.base_folder, 'all_data_word2vec_size_50_iter10_v3.txt')
         f = open(path)
         lines = f.readlines()
         vocab_size = int(lines[0].split()[0])
         words_list = []
         vectors = []
-        for line in lines[1:]:
+        for i, line in enumerate(lines[1:]):
+            if i % 10000 == 0:
+                print i
             cur_vec = []
             parts = line.split()
             words_list.append(parts[0])
@@ -117,7 +128,13 @@ class DataHandler:
         return words_list, vectors, vocab_size
 
     @staticmethod
-    def convert_sentence_to_vector(words, words_list):
-        vec = map(lambda x: words_list.index(x), words)
-        return vec
-
+    def convert_sentence_to_idx_vector(words, word2idx_dict):
+        idx = []
+        for word in words:
+            try:
+                cur_i = word2idx_dict[word]
+            except:
+                cur_i = 0  # len(word2idx_dict.keys())
+                # print("error- ", word)
+            idx.append(cur_i)
+        return idx

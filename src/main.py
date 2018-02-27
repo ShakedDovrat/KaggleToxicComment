@@ -1,6 +1,7 @@
 from DataHandler import *
 from ToxicClassifier import *
 from PerformanceEvaluator import *
+import time
 
 
 def main():
@@ -12,12 +13,13 @@ def main():
     config = Config()
     classifier = ToxicClassifier(data_handler, config)
     classifier.build_net()
+
     classifier.train()
     predictions = classifier.predict_on_test()
 
     analyzer = PerformanceEvaluator(data_handler, predictions)
     analyzer.analyze()
-    analyzer.output_results('results.csv')
+    analyzer.output_results('results{}.csv'.format(time.strftime('_%Y_%m_%d_%H_%M_%S')))
 
 
 if __name__ == '__main__':

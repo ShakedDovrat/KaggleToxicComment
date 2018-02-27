@@ -1,9 +1,11 @@
 from keras.layers import Input, Dense, Activation, LSTM, Embedding
 from keras.models import Model
 import random as random
+import keras
 from keras import optimizers
 import numpy as np
 from keras.preprocessing.sequence import pad_sequences
+from sklearn.metrics import roc_auc_score
 
 
 class Config:
@@ -15,6 +17,7 @@ class Config:
         self.batch_size = batch_size
         self.num_epochs = num_epochs
         self.lr = 0.01
+        self.all_data = False
 
 
 class ToxicClassifier:
@@ -53,14 +56,54 @@ class ToxicClassifier:
         x_val = np.array(x_all[split_idx:])
         y = np.array(y_all[:split_idx])
         y_val = np.array(y_all[split_idx:])
+        callbacks = [roc_callback(training_data=[x, y], validation_data=[x_val, y_val])]
+        if self.C.all_data:
+            x = x_all
+            y = y_all
         self.model.fit(
-            x=x_all,
-            y=y_all,
+            x=x,
+            y=y,
             batch_size=self.C.batch_size,
             epochs=self.C.num_epochs,
-            validation_data=(x_val, y_val))
+            validation_data=(x_val, y_val),
+            # callbacks=callbacks
+        )
 
     def predict_on_test(self):
         x = np.array(self.data_handler.data['test']['input'])
         x = pad_sequences(x, maxlen=100)
         return self.model.predict(x=x, batch_size=self.C.batch_size)
+
+
+class roc_callback(keras.callbacks.Callback):
+    def __init__(self, training_data, validation_data):
+        self.x = training_data[0]
+        self.y = training_data[1]
+        self.x_val = validation_data[0]
+        self.y_val = validation_data[1]
+
+    def on_train_begin(self, logs={}):
+        return
+
+    def on_train_end(self, logs={}):
+        return
+
+    def on_epoch_begin(self, epoch, logs={}):
+        return
+
+    def on_epoch_end(self, epoch, logs={}):
+        y_pred = self.model.predict(self.x)
+        roc = roc_auc_score(self.y, y_pred)
+
+        y_pred_val = self.model.predict(self.x_val)
+        roc_val = roc_auc_score(self.y_val, y_pred_val)
+
+        print(
+            '\rroc-auc: %s - roc-auc_val: %s' % (str(round(roc, 4)), str(round(roc_val, 4))) + '\n')
+        return
+
+    def on_batch_begin(self, batch, logs={}):
+        return
+
+    def on_batch_end(self, batch, logs={}):
+        return

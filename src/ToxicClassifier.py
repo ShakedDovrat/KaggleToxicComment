@@ -1,5 +1,6 @@
 from keras.layers import Input, Dense, Activation, LSTM, Embedding
 from keras.models import Model
+import random as random
 from keras import optimizers
 import numpy as np
 from keras.preprocessing.sequence import pad_sequences
@@ -53,7 +54,5 @@ class ToxicClassifier:
             epochs=self.C.num_epochs,
             validation_data=(x, y))
 
-    def evaluate(self):
-        x = self.data_handler['test']['input']
-        y = self.data_handler['test']['labels']
-        return self.model.evaluate(x=x, y=y, batch_size=self.C.batch_size)
+    def predict_on_test(self):
+        pass

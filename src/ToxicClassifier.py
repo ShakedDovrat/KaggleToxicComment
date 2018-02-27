@@ -8,7 +8,7 @@ from keras.preprocessing.sequence import pad_sequences
 
 class Config:
     def __init__(self, embedding_dim=50, embedding_matrix=None, lstm_state_size=100,
-                 batch_size=2 ** 12, num_epochs=10):
+                 batch_size=2 ** 12, num_epochs=6):
         self.embedding_dim = embedding_dim
         self.embedding_matrix = embedding_matrix
         self.lstm_state_size = lstm_state_size
@@ -44,15 +44,23 @@ class ToxicClassifier:
         return model
 
     def train(self):
-        x = np.array(self.data_handler.data['train']['input'])
-        y = np.array(self.data_handler.get_label_data_train())
-        x = pad_sequences(x, maxlen=100)
+        length = len(self.data_handler.data['train']['input'])
+        split_idx = int(length * 0.8)
+        x_all = self.data_handler.data['train']['input']
+        x_all = pad_sequences(x_all, maxlen=100)
+        y_all = self.data_handler.get_label_data_train()
+        x = np.array(x_all[:split_idx])
+        x_val = np.array(x_all[split_idx:])
+        y = np.array(y_all[:split_idx])
+        y_val = np.array(y_all[split_idx:])
         self.model.fit(
-            x=x,
-            y=y,
+            x=x_all,
+            y=y_all,
             batch_size=self.C.batch_size,
             epochs=self.C.num_epochs,
-            validation_data=(x, y))
+            validation_data=(x_val, y_val))
 
     def predict_on_test(self):
-        pass
+        x = np.array(self.data_handler.data['test']['input'])
+        x = pad_sequences(x, maxlen=100)
+        return self.model.predict(x=x, batch_size=self.C.batch_size)

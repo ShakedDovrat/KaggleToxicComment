@@ -54,20 +54,21 @@ class DataHandler:
         x = 1
 
     def analyze(self):
-        self.data['train']['vectored'] = self.data['train']['cleaned'].apply(DataHandler.text_to_words)
-        # self.data['train']['grammar_data'] =self.data['train']['cleaned'].apply(self.obtain_grammar_data)
-        # self.data.to_csv(os.path.join(self.base_folder, 'train_analysis.csv'))
-        # print(self.data['train']['vectored'])
-        # self.data['train']['grammar_data'] =self.data['train']['cleaned'].apply(self.obtain_grammar_data)
-        # print(self.data['train']['vectored'])
-        num_vectors = []
-        words_list, _, _ = self.read_word2vec_output()
-        word2idx_dict = {word: i for i, word in enumerate(words_list)}
-        for i, sen in enumerate(self.data['train']['vectored']):
-            if i % 1000 == 0:
-                print "a", i
-            num_vectors.append(self.convert_sentence_to_idx_vector(sen, word2idx_dict))
-        self.data['train']['input'] = num_vectors
+        for dataset in ['train', 'test']:
+            self.data[dataset]['vectored'] = self.data[dataset]['cleaned'].apply(DataHandler.text_to_words)
+            # self.data['train']['grammar_data'] =self.data['train']['cleaned'].apply(self.obtain_grammar_data)
+            # self.data.to_csv(os.path.join(self.base_folder, 'train_analysis.csv'))
+            # print(self.data['train']['vectored'])
+            # self.data['train']['grammar_data'] =self.data['train']['cleaned'].apply(self.obtain_grammar_data)
+            # print(self.data['train']['vectored'])
+            num_vectors = []
+            words_list, _, _ = self.read_word2vec_output()
+            word2idx_dict = {word: i for i, word in enumerate(words_list)}
+            for i, sen in enumerate(self.data[dataset]['vectored']):
+                if i % 1000 == 0:
+                    print "a", i
+                num_vectors.append(self.convert_sentence_to_idx_vector(sen, word2idx_dict))
+            self.data[dataset]['input'] = num_vectors
 
     # def obtain_grammar_data(self, raw_text):
     #     matches = self.tool.check(raw_text)
